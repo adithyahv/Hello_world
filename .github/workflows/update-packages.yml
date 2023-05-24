@@ -25,29 +25,26 @@ jobs:
 
       - name: Update Requirements
         run: |
-          # Read the current requirements.txt file
           current_requirements=$(cat requirements.txt)
           
-          # Loop through each line in requirements.txt
+         
           while IFS= read -r line; do
-            # Split the line into package name and version
+           
             package_name=$(echo "$line" | cut -d'==' -f1)
             package_version=$(echo "$line" | cut -d'==' -f2)
             
-            # Check if the package version is "old"
+            
             if [[ "$package_version" == "old" ]]; then
-              # Install the latest version of the package
+              
               pip install --upgrade "$package_name"
             fi
           done <<< "$current_requirements"
 
-          # Update requirements.txt with the latest versions
+          
           pip freeze > requirements.txt
 
       - name: Commit Changes
         run: |
-          git config --global user.name "Your Name"
-          git config --global user.email "youremail@example.com"
           git add requirements.txt
           git commit -m "Update package versions"
           git push
