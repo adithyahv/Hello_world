@@ -25,26 +25,25 @@ jobs:
 
       - name: Update Requirements
         run: |
-          current_requirements=$(cat requirements.txt)
-          
-         
           while IFS= read -r line; do
-           
             package_name=$(echo "$line" | cut -d'==' -f1)
             package_version=$(echo "$line" | cut -d'==' -f2)
-            
-            
-            if [[ "$package_version" == "old" ]]; then
-              
-              pip install --upgrade "$package_name"
-            fi
-          done <<< "$current_requirements"
 
-          
-          pip freeze > requirements.txt
+            if [[ "$package_name" == "flask" && "$package_version" == "1.0.2" ]]; then
+              pip uninstall -y "$package_name"
+              pip install flask
+              package_version=$(pip show flask | grep Version | awk '{print $2}')
+            fi
+
+            echo "$package_name==$package_version"
+          done < requirements.txt > updated_requirements.txt
+
+          mv updated_requirements.txt requirements.txt
 
       - name: Commit Changes
         run: |
+          git config --global user.name "Your Name"
+          git config --global user.email "youremail@example.com"
           git add requirements.txt
           git commit -m "Update package versions"
           git push
