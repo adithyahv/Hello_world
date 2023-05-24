@@ -32,12 +32,12 @@ jobs:
 
             if [[ $latest_version != $current_version ]]; then
               echo "A new version of $package_name is available. Updating..."
-              sed -i "s/$package_name=$current_version/$package_name=$latest_version/g" requirements.txt
+              sed -i "s/$package_name==$current_version/$package_name==$latest_version/g" requirements.txt
             else
               echo "No updates available for $package_name"
             fi
           done < requirements.txt
-          - name: Configure Git
+
       - name: Configure Git
         run: |
           git config --global user.name "adithyahv"
