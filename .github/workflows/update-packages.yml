@@ -11,20 +11,24 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses:  actions/setup-python@v3
+        uses: actions/setup-python@v2
         with:
           python-version: 3.x
 
-      - name: Update Package Versions
+      - name: Install Dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt --upgrade
-          git config --global user.name "Adithyahv"
-          git config --global user.email "adithyahv5@gmail.com"
-          git checkout main
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Update Requirements
+        run: |
+          pip freeze > requirements.txt
+
+      - name: Commit Changes
+        run: |
           git add requirements.txt
           git commit -m "Update package versions"
           git push
