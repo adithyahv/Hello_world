@@ -28,8 +28,8 @@ jobs:
           while IFS= read -r line; do
             package_name=$(echo "$line" | cut -d'=' -f1)
             current_version=$(echo "$line" | cut -d'=' -f3)
-            latest_v.ersion=$(pip install "$package_name" --no-cache-dir -U | grep "Successfully installed $package_name" | awk '{print $NF}')
-            echo $latest_version
+            latest_version=$(pip install "$package_name" --no-cache-dir -U | grep "Successfully installed $package_name" | awk '{print $NF}')
+            echo "Latest version is $latest_version"
             if [[ $latest_version != $current_version ]]; then
               echo "A new version of $package_name is available. Updating..."
               sed -i "s/$package_name==$current_version/$package_name==$latest_version/g" requirements.txt
