@@ -23,22 +23,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Update Requirements
+      - name: Check for Updates
         run: |
           while IFS= read -r line; do
-            package_name=$(echo "$line" | awk -F'==' '{print $1}')
-            package_version=$(echo "$line" | awk -F'==' '{print $2}')
-            
-            if [[ "$package_name" == "flask" && "$package_version" == "1.0.2" ]]; then
-              pip uninstall -y "$package_name"
-              pip install flask
-              package_version=$(pip show flask | grep Version | awk '{print $2}')
-            fi
-            
-            echo "$package_name==$package_version"
-          done < requirements.txt > updated_requirements.txt
+            package_name=$(echo "$line" | cut -d'=' -f1)
+            current_version=$(echo "$line" | cut -d'=' -f3)
+            latest_version=$(pip install "$package_name" --no-cache-dir -U | grep "Successfully installed $package_name" | awk '{print $NF}')
 
-          mv updated_requirements.txt requirements.txt
+            if [[ $latest_version != $current_version ]]; then
+              echo "A new version of $package_name is available. Updating..."
+              sed -i "s/$package_name=$current_version/$package_name=$latest_version/g" requirements.txt
+            else
+              echo "No updates available for $package_name"
+            fi
+          done < requirements.txt
+          - name: Configure Git
+      - name: Configure Git
+        run: |
+          git config --global user.name "Your Username"
+          git config --global user.email "your-email@example.com"
 
       - name: Commit Changes
         run: |
