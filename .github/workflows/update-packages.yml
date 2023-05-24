@@ -28,13 +28,12 @@ jobs:
           while IFS= read -r line; do
             package_name=$(echo "$line" | cut -d'=' -f1)
             current_version=$(echo "$line" | cut -d'=' -f3)
-            pip install flask --no-cache-dir -U
-            latest_version=$(pip show flask | grep -i "Version:" | awk '{print $2}')
-            echo "Latest Flask version: $latest_version"
-            pip show flask
+            pip install $package_name --no-cache-dir -U
+            latest_version=$(pip show $package_name | grep -i "Version:" | awk '{print $2}')
+            echo "Latest $package_name version: $latest_version"
+            pip show $package_name
             echo "Latest version is $latest_version"
             if [[ $latest_version != $current_version ]]; then
-              echo "A new version of $package_name is available. Updating..."
               sed -i "s/$package_name==$current_version/$package_name==$latest_version/g" requirements.txt
             else
               echo "No updates available for $package_name"
