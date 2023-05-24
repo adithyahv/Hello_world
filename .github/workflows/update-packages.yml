@@ -12,15 +12,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-        with:
-             node-version: 16
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-          node-version: 16
-
 
       - name: Install Dependencies
         run: |
@@ -30,15 +26,15 @@ jobs:
       - name: Update Requirements
         run: |
           while IFS= read -r line; do
-            package_name=$(echo "$line" | cut -d'==' -f1)
-            package_version=$(echo "$line" | cut -d'==' -f2)
-
+            package_name=$(echo "$line" | awk -F'==' '{print $1}')
+            package_version=$(echo "$line" | awk -F'==' '{print $2}')
+            
             if [[ "$package_name" == "flask" && "$package_version" == "1.0.2" ]]; then
               pip uninstall -y "$package_name"
               pip install flask
               package_version=$(pip show flask | grep Version | awk '{print $2}')
             fi
-
+            
             echo "$package_name==$package_version"
           done < requirements.txt > updated_requirements.txt
 
@@ -46,8 +42,6 @@ jobs:
 
       - name: Commit Changes
         run: |
-          git config --global user.name "adithyahv"
-          git config --global user.email "adithyahv5@gmail.com"
           git add requirements.txt
           git commit -m "Update package versions"
           git push
