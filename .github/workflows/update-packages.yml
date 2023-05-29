@@ -28,7 +28,7 @@ jobs:
           while IFS= read -r line; do
             package_name=$(echo "$line" | cut -d'=' -f1)
             current_version=$(echo "$line" | cut -d'=' -f3)
-            pip install $package_name --no-cache-dir -U
+            pip install --no-cache-dir -U "$package_name"=="$current_version"
             latest_version=$(pip show $package_name | grep -i "Version:" | awk '{print $2}')
             echo "Latest $package_name version: $latest_version"
             pip show $package_name
