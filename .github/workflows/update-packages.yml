@@ -23,9 +23,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-       - name: Check for Updates
-          run: |
-            while IFS= read -r line; do
+      - name: Check for Updates
+        run: |
+             while IFS= read -r line; do
               package_name=$(echo "$line" | cut -d'=' -f1)
               current_version=$(echo "$line" | cut -d'=' -f3)
               latest_version=$(curl -s "https://pypi.org/pypi/$package_name/json" | jq -r '.info.version')
@@ -38,8 +38,6 @@ jobs:
                 echo "No updates available for $package_name"
               fi
             done < requirements.txt
-
-
       - name: Configure Git
         run: |
           git config --global user.name "adithyahv"
