@@ -39,10 +39,6 @@ jobs:
             fi
           done < requirements.txt
 
-      - name: Save Changes to requirements.txt
-        run: |
-          git diff-index --quiet HEAD -- requirements.txt || git checkout HEAD -- requirements.txt
-
       - name: Configure Git
         run: |
           git config --global user.name "adithyahv"
@@ -53,11 +49,7 @@ jobs:
           if git status --porcelain | grep "requirements.txt"; then
             git add requirements.txt
             git commit -m "Update package versions"
-            git push
+            git push origin main
           else
             echo "No changes to requirements.txt"
           fi
-      - name: Check Git HEAD
-        run: |
-          git rev-parse HEAD
-  
