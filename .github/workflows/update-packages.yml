@@ -23,12 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check for Updates
-        run: |
+       - name: Check for Updates
+          run: |
             while IFS= read -r line; do
               package_name=$(echo "$line" | cut -d'=' -f1)
               current_version=$(echo "$line" | cut -d'=' -f3)
-              latest_version=$(pip search "$package_name" | grep -E "^$package_name" | awk '{print $2}' | tr -d '()')
+              latest_version=$(curl -s "https://pypi.org/pypi/$package_name/json" | jq -r '.info.version')
               echo "Latest $package_name version: $latest_version"
               echo "Current version is $current_version"
               if [[ $latest_version != $current_version ]]; then
@@ -38,6 +38,7 @@ jobs:
                 echo "No updates available for $package_name"
               fi
             done < requirements.txt
+
 
       - name: Configure Git
         run: |
