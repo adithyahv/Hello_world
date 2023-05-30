@@ -25,19 +25,19 @@ jobs:
 
       - name: Check for Updates
         run: |
-          while IFS= read -r line; do
-            package_name=$(echo "$line" | cut -d'=' -f1)
-            current_version=$(echo "$line" | cut -d'=' -f3)
-            installed_version=$(pip show $package_name | grep -i "Version:" | awk '{print $2}')
-            echo "Installed $package_name version: $installed_version"
-            echo "Required version in requirements.txt: $current_version"
-            if [[ $installed_version != $current_version ]]; then
-              sed -i "s/$package_name==$current_version/$package_name==$installed_version/g" requirements.txt
-              echo "Updated $package_name to $installed_version in requirements.txt"
-            else
-              echo "No updates required for $package_name"
-            fi
-          done < requirements.txt
+            while IFS= read -r line; do
+              package_name=$(echo "$line" | cut -d'=' -f1)
+              current_version=$(echo "$line" | cut -d'=' -f3)
+              latest_version=$(pip search "$package_name" | grep -E "^$package_name" | awk '{print $2}' | tr -d '()')
+              echo "Latest $package_name version: $latest_version"
+              echo "Current version is $current_version"
+              if [[ $latest_version != $current_version ]]; then
+                sed -i "s/$package_name==$current_version/$package_name==$latest_version/g" requirements.txt
+                echo "Updated $package_name to $latest_version"
+              else
+                echo "No updates available for $package_name"
+              fi
+            done < requirements.txt
 
       - name: Configure Git
         run: |
